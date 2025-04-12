@@ -1,31 +1,13 @@
+import com.android.build.gradle.tasks.SourceJarTask
+import com.vanniktech.maven.publish.AndroidMultiVariantLibrary
+
 plugins {
     id 'com.android.library'
-    id 'maven-publish'
-    id 'signing'
-//    id 'org.jetbrains.dokka' version '1.4.32' // For Kotlin projects
+    id 'com.vanniktech.maven.publish'
 }
-apply from: rootProject.file('gradle/build_library.gradle')
 
 android {
     namespace "com.tencent.mmkv"
-    publishing {
-        multipleVariants("DefaultCppRelease") {
-            includeBuildTypeValues('release')
-            includeFlavorDimensionAndValues('stl_mode', 'DefaultCpp')
-            withJavadocJar()
-        }
-        multipleVariants("StaticCppRelease") {
-            includeBuildTypeValues('release')
-            includeFlavorDimensionAndValues('stl_mode', 'StaticCpp')
-            withJavadocJar()
-        }
-        multipleVariants("SharedCppRelease") {
-            includeBuildTypeValues('release')
-            includeFlavorDimensionAndValues('stl_mode', 'SharedCpp')
-            withJavadocJar()
-        }
-    }
-
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -36,7 +18,6 @@ android {
             }
         }
         ndkVersion = '26.3.11579264'
-        minSdkVersion rootProject.ext.minSdkVersion
     }
     buildTypes {
         release {
@@ -69,6 +50,7 @@ android {
     flavorDimensions = ["stl_mode"]
     productFlavors {
         DefaultCpp {
+            isDefault = true
             dimension "stl_mode"
             ext.artifactIdSuffix = ''
             externalNativeBuild {
@@ -87,10 +69,6 @@ android {
                     cppFlags "-DMMKV_STL_SHARED=0"
                 }
             }
-            // not working
-//            packagingOptions {
-//                exclude "prefab/modules/**"
-//            }
         }
         SharedCpp {
             dimension "stl_mode"
@@ -104,6 +82,7 @@ android {
         }
     }
     buildFeatures {
+        buildConfig true
         prefab true
         prefabPublishing true
         aidl true
@@ -115,122 +94,26 @@ android {
     }
 }
 
-afterEvaluate {
-    android.libraryVariants.all { variant ->
-        if (variant.buildType.name == "release") {
-            def abiFilters = ['arm64-v8a', 'x86_64', 'armeabi-v7a', 'x86']
-
-            def strippedLibsDir = "$buildDir/intermediates/stripped_native_libs/${variant.name}/strip${variant.name}DebugSymbols/out/lib"
-            // Create per-variant copy task
-            tasks.register("syncStrippedLibsToPrefab${variant.name.capitalize()}", Copy) {
-                from(strippedLibsDir) {
-                    include "**/libmmkv.so"
-                }
-                into "$buildDir/intermediates/prefab_package/${variant.name.capitalize()}/prefab/modules/mmkv/libs"
-                eachFile {
-                    println('hhh before:' + path)
-                    for (abi in abiFilters) {
-                        if (path.contains("${abi}/")) {
-                            path = path.replace("${abi}/", "android.${abi}/")
-                            break
-                        }
-                    }
-                    println('hhh after:' + path)
-                }
-
-                // Hook into build process
-                dependsOn("strip${variant.name.capitalize()}DebugSymbols")
-            }
-
-            // Hook into build process
-            tasks.named("externalNativeBuild${variant.name.capitalize()}") {
-                finalizedBy("syncStrippedLibsToPrefab${variant.name.capitalize()}")
-            }
-            tasks.named("bundle${variant.name.capitalize()}Aar") {
-                dependsOn("syncStrippedLibsToPrefab${variant.name.capitalize()}")
-            }
-
-            // Generate combined artifact suffix from all flavor dimensions
-            def flavorSuffixes = variant.productFlavors.collect { it.ext.artifactIdSuffix }
-            def artifactIdSuffix = flavorSuffixes.join("-")
-            def fullArtifactId = "${POM_ARTIFACT_ID}${artifactIdSuffix ? "-$artifactIdSuffix" : ""}"
-
-            // Create debug symbols task per variant
-            def symbolsTask = tasks.register("bundleSymbols${variant.name.capitalize()}", Jar) {
-                from file("build/intermediates/cmake/${variant.name}/obj/")
-                archiveClassifier.set("so-symbols")
-                destinationDirectory.set(file("$buildDir/intermediates/so-symbols/${variant.name}"))
-                dependsOn('build')
-            }
-
-            // Create publication per variant
-            publishing.publications.create(variant.name, MavenPublication) {
-                from components.findByName(variant.name)
-
-                groupId = group
-                artifactId = fullArtifactId
-                version = version
-
-                // Add debug symbols
-                artifact symbolsTask
-
-                // Configure POM
-                pom {
-                    name = 'MMKV'
-                    description = POM_DESCRIPTION
-                    url = POM_URL
-                    licenses {
-                        license {
-                            name = POM_LICENCE_NAME
-                            url = POM_LICENCE_URL
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = POM_DEVELOPER_ID
-                            name = POM_DEVELOPER_NAME
-                        }
-                    }
-
-                    scm {
-                        url = POM_SCM_URL
-                        connection = POM_SCM_CONNECTION
-                        developerConnection = POM_SCM_DEV_CONNECTION
-                    }
-                }
-            }
-        }
-    }
-
-    // Configure repositories and signing
-    publishing.repositories {
-        maven {
-            name = "MavenCentral"
-            url = RELEASE_REPOSITORY_URL
-            credentials {
-                username = REPOSITORY_USERNAME
-                password = REPOSITORY_PASSWORD
-            }
-        }
-    }
-
-    signing {
-        sign publishing.publications
-    }
+mavenPublishing {
+    def buildTypes = ['release'] as Set
+    def variants = ['stl_mode': ['DefaultCpp'] as Set]
+    configure(new AndroidMultiVariantLibrary(true, true, buildTypes, variants))
 }
 
-configurations {
-    javadocDeps
+tasks.withType(SourceJarTask).configureEach {
+    doFirst {
+        // Fix `Cannot copy file '.../MMKV/Android/MMKV/mmkv/build/generated/aidl_source_output_dir/DefaultCppRelease/out/com/tencent/mmkv/ParcelableMMKV.java'
+        //  to 'com/tencent/mmkv/ParcelableMMKV.java' because file '.../MMKV/Android/MMKV/mmkv/src/main/java/com/tencent/mmkv/ParcelableMMKV.java'
+        //  has already been copied there.`
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':mmkvannotation')
+
     implementation 'androidx.annotation:annotation:1.9.1'
-    javadocDeps 'androidx.annotation:annotation:1.9.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-
-    compileOnly project(':mmkvannotation')
 }

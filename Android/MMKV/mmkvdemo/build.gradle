@@ -1,9 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
     namespace "com.tencent.mmkvdemo"
-    compileSdk 34
 
     signingConfigs {
         config {
@@ -16,8 +17,7 @@ android {
 
     defaultConfig {
         applicationId "com.tencent.mmkvdemo"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion 34
+        targetSdk = compileSdk
         versionCode 1
         versionName "1.0"
 
@@ -65,43 +65,16 @@ android {
 
     buildFeatures {
         aidl true
-
+        buildConfig true
         prefab true
     }
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-    /*splits {
-        // Configures multiple APKs based on ABI.
-        abi {
-
-            // Enables building multiple APKs per ABI.
-            enable true
-
-            // By default all ABIs are included, so use reset() and include to specify that we only want specific APKs
-            // Resets the list of ABIs that Gradle should create APKs for to none.
-            reset()
-
-            // Specifies a list of ABIs that Gradle should create APKs for.
-            include "armeabi-v7a"
-
-            // Specifies that we do not want to also generate a universal APK that includes all ABIs.
-            universalApk false
-        }
-    }*/
 }
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-
-// Define the mmkv version to use
-def mmkvVersion = '2.1.0'
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':mmkv')
 //    implementation "com.tencent:mmkv:$mmkvVersion"
 //    implementation "com.tencent:mmkv-static:$mmkvVersion" // this is identical to 'com.tencent:mmkv'
@@ -111,6 +84,5 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.getkeepsafe.relinker:relinker:1.4.5'
 }

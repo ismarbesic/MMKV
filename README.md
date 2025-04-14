@@ -5,9 +5,13 @@
 
 中文版本请参看[这里](./README_CN.md)
 
-MMKV is an **efficient**, **small**, **easy-to-use** mobile key-value storage framework used in the WeChat application. It's currently available on **Android**, **iOS/macOS**, **Windows**, **POSIX** and **HarmonyOS NEXT**.
+MMKV is an **efficient**, **small**, **easy-to-use** mobile key-value storage framework used in the WeChat application. It's currently available on **Android**, **iOS/macOS**, **Windows**, **POSIX** and **HarmonyOS NEXT**.  
+
+**NOTE** This project is a fork of the original [Tencent/MMKV](https://github.com/Tencent/MMKV), which supports 32-bit devices on Android.
 
 # MMKV for Android
+
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv/overview)
 
 ## Features
 
@@ -28,7 +32,7 @@ Add the following lines to `build.gradle` on your app module:
 
 ```gradle
 dependencies {
-    implementation 'com.tencent:mmkv:2.1.0'
+    implementation 'io.github.goooler.mmkv:2.1.0'
     // replace "2.1.0" with any available version
 }
 ```

@@ -26,6 +26,10 @@ android {
                 cmake {
                     cppFlags "-fvisibility=hidden", "-funwind-tables", "-fasynchronous-unwind-tables", "-O2",
                             "-Wl,-z,max-page-size=16384"
+                    // Enable stripping of debug symbols.
+                    arguments '-DCMAKE_BUILD_TYPE=Release',
+                            '-DCMAKE_C_FLAGS_RELEASE=-s -Wl,--strip-all -DNDEBUG',
+                            '-DCMAKE_CXX_FLAGS_RELEASE=-s -Wl,--strip-all -DNDEBUG'
                 }
             }
             consumerProguardFiles 'proguard-rules.pro'

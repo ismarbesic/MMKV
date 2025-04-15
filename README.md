@@ -12,7 +12,7 @@ See more info about this fork [here](./Fork.md).
 
 # MMKV for Android
 
-[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv/overview)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv)
 
 ## Features
 

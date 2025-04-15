@@ -21,7 +21,7 @@ MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化/反序列
 
 ## Android 指南
 
-[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv/overview)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv)
 
 ### 安装引入
 推荐使用 Maven：

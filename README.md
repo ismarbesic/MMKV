@@ -7,7 +7,8 @@
 
 MMKV is an **efficient**, **small**, **easy-to-use** mobile key-value storage framework used in the WeChat application. It's currently available on **Android**, **iOS/macOS**, **Windows**, **POSIX** and **HarmonyOS NEXT**.  
 
-**NOTE** This project is a fork of the original [Tencent/MMKV](https://github.com/Tencent/MMKV), which supports 32-bit devices on Android.
+**NOTE** This project is a fork of the original [Tencent/MMKV](https://github.com/Tencent/MMKV), which supports 32-bit devices on Android. 
+See more info about this fork [here](./Fork.md).
 
 # MMKV for Android
 

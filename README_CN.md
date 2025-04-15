@@ -32,7 +32,6 @@ dependencies {
     // replace "2.1.0" with any available version
 }
 ```
-从 v2.0.0 起, MMKV **去掉了 32-bit 架构的支持**、API level 22 及以下的支持, 如有这类需求，请使用 v1.3.x LTS 版本。  
 更多安装指引参考 [Android Setup](https://github.com/Tencent/MMKV/wiki/android_setup_cn)。
 
 ### 快速上手

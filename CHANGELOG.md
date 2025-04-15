@@ -4,6 +4,10 @@
 ## [Unreleased]
 [Unreleased]: https://github.com/Goooler/MMKV/compare/v2.1.0...HEAD
 
+**Fixed**
+
+- Remove 64-bit check in `MMKV.initialize`.
+
 
 ## [2.1.0] - 2025-04-14
 [2.1.0]: https://github.com/Goooler/MMKV/releases/tag/v2.1.0

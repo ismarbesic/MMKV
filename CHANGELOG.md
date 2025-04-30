@@ -1,30 +1,24 @@
 # Change Log
 
-
-## [Unreleased]
-[Unreleased]: https://github.com/Goooler/MMKV/compare/v2.2.1...HEAD
+## [Unreleased](https://github.com/Goooler/MMKV/compare/v2.2.1...HEAD)
 
 
-## [2.2.1] - 2025-04-30
-[2.2.1]: https://github.com/Goooler/MMKV/releases/tag/v2.2.1
+## [2.2.1](https://github.com/Goooler/MMKV/releases/tag/v2.2.1) - 2025-04-30
 
 **Full Changelog**: https://github.com/Goooler/MMKV/compare/v2.1.0.1...v2.2.1
 
-
-## [2.1.0.1] - 2025-04-15
-[2.1.0.1]: https://github.com/Goooler/MMKV/releases/tag/v2.1.0.1
+## [2.1.0.1](https://github.com/Goooler/MMKV/releases/tag/v2.1.0.1) - 2025-04-15
 
 **Fixed**
 
 - Remove 64-bit check in `MMKV.initialize`.
 
-
-## [2.1.0] - 2025-04-14
-[2.1.0]: https://github.com/Goooler/MMKV/releases/tag/v2.1.0
+## [2.1.0](https://github.com/Goooler/MMKV/releases/tag/v2.1.0) - 2025-04-14
 
 **Added**
 
-- Supports 32-bit, based on [the upstream version 2.1.0](https://github.com/Tencent/MMKV/releases/tag/v2.1.0).
+- Supports 32-bit, based
+  on [the upstream version 2.1.0](https://github.com/Tencent/MMKV/releases/tag/v2.1.0).
 
 ```
 OLD: mmkv-2.1.0-tencent.aar

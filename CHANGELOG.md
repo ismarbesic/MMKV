@@ -2,7 +2,13 @@
 
 
 ## [Unreleased]
-[Unreleased]: https://github.com/Goooler/MMKV/compare/v2.1.0.1...HEAD
+[Unreleased]: https://github.com/Goooler/MMKV/compare/v2.2.1...HEAD
+
+
+## [2.2.1] - 2025-04-30
+[2.2.1]: https://github.com/Goooler/MMKV/releases/tag/v2.2.1
+
+**Full Changelog**: https://github.com/Goooler/MMKV/compare/v2.1.0.1...v2.2.1
 
 
 ## [2.1.0.1] - 2025-04-15

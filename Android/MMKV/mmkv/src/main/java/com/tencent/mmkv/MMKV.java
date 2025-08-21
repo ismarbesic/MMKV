@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -193,15 +194,17 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
         String cacheDir = context.getCacheDir().getAbsolutePath();
 
         gCallbackHandler = handler;
-        if (gCallbackHandler != null && gCallbackHandler.wantLogRedirecting()) {
-            gWantLogReDirecting = true;
+        boolean hasCallback = false;
+        long nativeLogHandler = 0;
+        if (handler != null) {
+            hasCallback = true;
+            if (handler.wantLogRedirecting()) {
+                gWantLogReDirecting = true;
+                nativeLogHandler = handler.getNativeLogHandler();
+            }
         }
 
-        String ret = doInitialize(rootDir, cacheDir, loader, logLevel, gWantLogReDirecting);
-
-        if (gCallbackHandler != null) {
-            setCallbackHandler(gWantLogReDirecting, true);
-        }
+        String ret = doInitialize(rootDir, cacheDir, loader, logLevel, gWantLogReDirecting, hasCallback, nativeLogHandler);
 
         // disable process mode in release build
         // FIXME: Find a better way to getApplicationInfo() without using context.
@@ -215,9 +218,9 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
         return ret;
     }
 
-    private static String doInitialize(String rootDir, String cacheDir, LibLoader loader, MMKVLogLevel logLevel, boolean wantLogReDirecting) {
+    private static String doInitialize(String rootDir, String cacheDir, LibLoader loader, MMKVLogLevel logLevel, boolean wantLogReDirecting, boolean hasCallback, long nativeHandler) {
         tryLoadNativeLib(loader);
-        jniInitialize(rootDir, cacheDir, logLevel2Int(logLevel), wantLogReDirecting);
+        jniInitialize(rootDir, cacheDir, logLevel2Int(logLevel), wantLogReDirecting, hasCallback, nativeHandler);
         MMKV.rootDir = rootDir;
         return MMKV.rootDir;
     }
@@ -249,7 +252,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     @Deprecated
     public static String initialize(String rootDir) {
         MMKVLogLevel logLevel = BuildConfig.DEBUG ? MMKVLogLevel.LevelDebug : MMKVLogLevel.LevelInfo;
-        return doInitialize(rootDir, rootDir + "/.tmp", null, logLevel, false);
+        return doInitialize(rootDir, rootDir + "/.tmp", null, logLevel, false, false, 0);
     }
 
     /**
@@ -258,7 +261,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
      */
     @Deprecated
     public static String initialize(String rootDir, MMKVLogLevel logLevel) {
-        return doInitialize(rootDir, rootDir + "/.tmp", null, logLevel, false);
+        return doInitialize(rootDir, rootDir + "/.tmp", null, logLevel, false, false, 0);
     }
 
     /**
@@ -268,7 +271,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     @Deprecated
     public static String initialize(String rootDir, LibLoader loader) {
         MMKVLogLevel logLevel = BuildConfig.DEBUG ? MMKVLogLevel.LevelDebug : MMKVLogLevel.LevelInfo;
-        return doInitialize(rootDir, rootDir + "/.tmp", loader, logLevel, false);
+        return doInitialize(rootDir, rootDir + "/.tmp", loader, logLevel, false, false, 0);
     }
 
     /**
@@ -277,7 +280,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
      */
     @Deprecated
     public static String initialize(String rootDir, LibLoader loader, MMKVLogLevel logLevel) {
-        return doInitialize(rootDir, rootDir + "/.tmp", loader, logLevel, false);
+        return doInitialize(rootDir, rootDir + "/.tmp", loader, logLevel, false, false, 0);
     }
 
     /**
@@ -559,7 +562,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
             throw new IllegalStateException("You should Call MMKV.initialize() first.");
         }
 
-        String processName = MMKVContentProvider.getProcessNameByPID(context, android.os.Process.myPid());
+        String processName = MMKVContentProvider.getProcessNameByPID(context, Process.myPid());
         if (processName == null || processName.isEmpty()) {
             String message = "process name detect fail, try again later";
             simpleLog(MMKVLogLevel.LevelError, message);
@@ -1372,7 +1375,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
      */
     @Override
     public Map<String, ?> getAll() {
-        throw new java.lang.UnsupportedOperationException(
+        throw new UnsupportedOperationException(
                 "Intentionally Not Supported. Use allKeys() instead, getAll() not implement because type-erasure inside mmkv");
     }
 
@@ -1542,7 +1545,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
      */
     @Override
     public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
-        throw new java.lang.UnsupportedOperationException("Intentionally Not implement in MMKV");
+        throw new UnsupportedOperationException("Intentionally Not implement in MMKV");
     }
 
     /**
@@ -1550,7 +1553,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
      */
     @Override
     public void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
-        throw new java.lang.UnsupportedOperationException("Intentionally Not implement in MMKV");
+        throw new UnsupportedOperationException("Intentionally Not implement in MMKV");
     }
 
     /**
@@ -1594,7 +1597,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     @Nullable
     public static NativeBuffer createNativeBuffer(int size) {
         long pointer = createNB(size);
-        if (pointer <= 0) {
+        if (pointer == 0) {
             return null;
         }
         return new NativeBuffer(pointer, size);
@@ -1617,7 +1620,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     }
 
     // callback handler
-    private static MMKVHandler gCallbackHandler;
+    private static MMKVHandler gCallbackHandler = null;
     private static boolean gWantLogReDirecting = false;
 
     /**
@@ -1629,7 +1632,8 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     public static void registerHandler(MMKVHandler handler) {
         gCallbackHandler = handler;
         gWantLogReDirecting = gCallbackHandler.wantLogRedirecting();
-        setCallbackHandler(gWantLogReDirecting, true);
+        long nativeLogHandler = gCallbackHandler.getNativeLogHandler();
+        setCallbackHandler(gWantLogReDirecting, true, nativeLogHandler);
     }
 
     /**
@@ -1638,14 +1642,15 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     public static void unregisterHandler() {
         gCallbackHandler = null;
 
-        setCallbackHandler(false, false);
+        setCallbackHandler(false, false, 0);
         gWantLogReDirecting = false;
     }
 
     private static int onMMKVCRCCheckFail(String mmapID) {
         MMKVRecoverStrategic strategic = MMKVRecoverStrategic.OnErrorDiscard;
-        if (gCallbackHandler != null) {
-            strategic = gCallbackHandler.onMMKVCRCCheckFail(mmapID);
+        MMKVHandler handler = gCallbackHandler;
+        if (handler != null) {
+            strategic = handler.onMMKVCRCCheckFail(mmapID);
         }
         simpleLog(MMKVLogLevel.LevelInfo, "Recover strategic for " + mmapID + " is " + strategic);
         Integer value = recoverIndex.get(strategic);
@@ -1654,8 +1659,9 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
 
     private static int onMMKVFileLengthError(String mmapID) {
         MMKVRecoverStrategic strategic = MMKVRecoverStrategic.OnErrorDiscard;
-        if (gCallbackHandler != null) {
-            strategic = gCallbackHandler.onMMKVFileLengthError(mmapID);
+        MMKVHandler handler = gCallbackHandler;
+        if (handler != null) {
+            strategic = handler.onMMKVFileLengthError(mmapID);
         }
         simpleLog(MMKVLogLevel.LevelInfo, "Recover strategic for " + mmapID + " is " + strategic);
         Integer value = recoverIndex.get(strategic);
@@ -1663,8 +1669,9 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
     }
 
     private static void mmkvLogImp(int level, String file, int line, String function, String message) {
-        if (gCallbackHandler != null && gWantLogReDirecting) {
-            gCallbackHandler.mmkvLog(index2LogLevel[level], file, line, function, message);
+        MMKVHandler handler = gCallbackHandler;
+        if (handler != null && gWantLogReDirecting) {
+            handler.mmkvLog(index2LogLevel[level], file, line, function, message);
         } else {
             switch (index2LogLevel[level]) {
                 case LevelDebug:
@@ -1747,7 +1754,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
         nativeHandle = handle;
     }
 
-    private static native void jniInitialize(String rootDir, String cacheDir, int level, boolean wantLogReDirecting);
+    private static native void jniInitialize(String rootDir, String cacheDir, int level, boolean wantLogReDirecting, boolean hasCallback, long nativeHandler);
 
     native static long
     getMMKVWithID(String mmapID, int mode, @Nullable String cryptKey, @Nullable String rootPath,
@@ -1826,7 +1833,7 @@ public class MMKV implements SharedPreferences, SharedPreferences.Editor {
 
     private static native void setLogLevel(int level);
 
-    private static native void setCallbackHandler(boolean logReDirecting, boolean hasCallback);
+    private static native void setCallbackHandler(boolean logReDirecting, boolean hasCallback, long nativeHandle);
 
     private static native long createNB(int size);
 

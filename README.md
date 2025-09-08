@@ -33,7 +33,7 @@ Add the following lines to `build.gradle` on your app module:
 
 ```gradle
 dependencies {
-    implementation 'io.github.goooler.mmkv:<version>'
+    implementation 'io.github.goooler.mmkv:mmkv:<version>'
 }
 ```
 

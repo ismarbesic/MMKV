@@ -28,7 +28,7 @@ MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化/反序列
 
 ```gradle
 dependencies {
-    implementation 'io.github.goooler.mmkv:<version>'
+    implementation 'io.github.goooler.mmkv:mmkv:<version>'
 }
 ```
 更多安装指引参考 [Android Setup](https://github.com/Tencent/MMKV/wiki/android_setup_cn)。

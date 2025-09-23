@@ -47,7 +47,6 @@ android {
     flavorDimensions = ["stl_mode"]
     productFlavors {
         DefaultCpp {
-            isDefault = true
             dimension "stl_mode"
             ext.artifactIdSuffix = ''
             externalNativeBuild {
@@ -68,6 +67,7 @@ android {
             }
         }
         SharedCpp {
+            isDefault = true
             dimension "stl_mode"
             ext.artifactIdSuffix = 'shared'
             externalNativeBuild {
@@ -136,7 +136,7 @@ androidComponents {
 
 mavenPublishing {
     def buildTypes = ['release'] as Set
-    def variants = ['stl_mode': ['DefaultCpp', 'StaticCpp', 'SharedCpp'] as Set]
+    def variants = ['stl_mode': ['SharedCpp'] as Set]
     configure(new AndroidMultiVariantLibrary(true, true, buildTypes, variants))
 }
 

@@ -1,4 +1,7 @@
 # MMKV for HarmonyOS NEXT Change Log
+## v2.2.4 / 2025-09-25
+* Improve the performance of MMBuffer a little bit in some cases.
+
 ## v2.2.3 / 2025-08-20
 * Keep up with Core library v2.2.3.
 

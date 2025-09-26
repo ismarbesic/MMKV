@@ -1,4 +1,13 @@
 # MMKV Change Log
+## v2.2.4 / 2025-09-25
+This is a hotfix release mainly for iOS/macOS CocoaPods users.
+
+### Changes for All platforms
+* Improve the performance of MMBuffer a little bit in some cases.
+
+### iOS/macOS
+* Make MMKV and MMKVCore podspec define modules.
+
 ## v2.2.3 / 2025-08-20
 This is a feature release that brings **full desktop support to Flutter**. It also includes key bug fixes and enhancements for Android and other platforms.
 

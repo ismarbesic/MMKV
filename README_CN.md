@@ -1,8 +1,5 @@
 # MMKV——基于 mmap 的高性能通用 key-value 组件
-MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化/反序列化使用 protobuf 实现，性能高，稳定性强。从 2015 年中至今在微信上使用，其性能和稳定性经过了时间的验证。近期也已移植到 Android / macOS / Windows / POSIX / HarmonyOS NEXT 等平台，一并开源。  
-
-**注意** 这是一个基于 [Tencent/MMKV](https://github.com/Tencent/MMKV) 的项目，对32位的 Android 设备做了支持。
-在[这里](./Fork.md)查看更多关于此仓库的信息。
+MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化/反序列化使用 protobuf 实现，性能高，稳定性强。从 2015 年中至今在微信上使用，其性能和稳定性经过了时间的验证。近期也已移植到 Android / macOS / Windows / POSIX / HarmonyOS NEXT 等平台，一并开源。
 
 ## MMKV 源起
 在微信客户端的日常运营中，时不时就会爆发特殊文字引起系统的 crash，[参考文章](https://mp.weixin.qq.com/s?__biz=MzAwNDY1ODY2OQ==&mid=2649286826&idx=1&sn=35601cb1156617aa235b7fd4b085bfc4)，文章里面设计的技术方案是在关键代码前后进行计数器的加减，通过检查计数器的异常，来发现引起闪退的异常文字。在会话列表、会话界面等有大量 cell 的地方，希望新加的计时器不会影响滑动性能；另外这些计数器还要永久存储下来——因为闪退随时可能发生。这就需要一个性能非常高的通用 key-value 存储组件，我们考察了 SharedPreferences、NSUserDefaults、SQLite 等常见组件，发现都没能满足如此苛刻的性能要求。考虑到这个防 crash 方案最主要的诉求还是实时写入，而 mmap 内存映射文件刚好满足这种需求，我们尝试通过它来实现一套 key-value 组件。
@@ -20,17 +17,16 @@ MMKV 是基于 mmap 内存映射的 key-value 组件，底层序列化/反序列
 更详细的设计原理参考 [MMKV 原理](https://github.com/Tencent/MMKV/wiki/design)。
 
 ## Android 指南
-
-[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv)
-
 ### 安装引入
 推荐使用 Maven：
 
 ```gradle
 dependencies {
-    implementation 'io.github.goooler.mmkv:mmkv:<version>'
+    implementation 'com.tencent:mmkv:2.2.4'
+    // replace "2.2.4" with any available version
 }
 ```
+从 v2.0.0 起, MMKV **去掉了 32-bit 架构的支持**、API level 22 及以下的支持, 如有这类需求，请使用 v1.3.x LTS 版本。  
 更多安装指引参考 [Android Setup](https://github.com/Tencent/MMKV/wiki/android_setup_cn)。
 
 ### 快速上手
@@ -294,6 +290,7 @@ MMKV 以 BSD 3-Clause 证书开源，详情参见 [LICENSE.TXT](./LICENSE.TXT)�
 ## 参与贡献
 如果你有兴趣参与贡献，可以参考 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 [腾讯开源激励计划](https://opensource.tencent.com/contribution) 鼓励开发者的参与和贡献，期待你的加入。
+MMKV 正式加入[TDS 腾讯端服务产品联盟](https://tds-union.qq.com/)，携手联盟其他成员，共同致力于构建开放共赢的大前端技术产品生态。
 
 为了明确我们对参与者的期望，MMKV 采用了被广泛使用的、由 Contributor Covenant 所定义的行为准则。我们认为它很好地阐明了我们的价值观。有关更多信息请查看 [Code of Conduct](./CODE_OF_CONDUCT.md)。
 

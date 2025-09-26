@@ -1,18 +1,13 @@
 [![license](https://img.shields.io/badge/license-BSD_3-brightgreen.svg?style=flat)](https://github.com/Tencent/MMKV/blob/master/LICENSE.TXT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/Tencent/MMKV/pulls)
+[![Release Version](https://img.shields.io/badge/release-2.2.4-brightgreen.svg)](https://github.com/Tencent/MMKV/releases)
 [![Platform](https://img.shields.io/badge/Platform-%20Android%20%7C%20iOS%2FmacOS%20%7C%20Windows%20%7C%20POSIX%20%7C%20HarmonyOS%20NEXT-brightgreen.svg)](https://github.com/Tencent/MMKV/wiki/home)
 
 中文版本请参看[这里](./README_CN.md)
 
-MMKV is an **efficient**, **small**, **easy-to-use** mobile key-value storage framework used in the WeChat application. It's currently available on **Android**, **iOS/macOS**, **Windows**, **POSIX** and **HarmonyOS NEXT**.  
-
-> [!NOTE]
-> This project is a fork of the original [Tencent/MMKV](https://github.com/Tencent/MMKV), which supports 32-bit devices on Android.  
-> See more info about this fork [here](./Fork.md).
+MMKV is an **efficient**, **small**, **easy-to-use** mobile key-value storage framework used in the WeChat application. It's currently available on **Android**, **iOS/macOS**, **Windows**, **POSIX** and **HarmonyOS NEXT**.
 
 # MMKV for Android
-
-[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.goooler.mmkv/mmkv)](https://central.sonatype.com/artifact/io.github.goooler.mmkv/mmkv)
 
 ## Features
 
@@ -33,9 +28,12 @@ Add the following lines to `build.gradle` on your app module:
 
 ```gradle
 dependencies {
-    implementation 'io.github.goooler.mmkv:mmkv:<version>'
+    implementation 'com.tencent:mmkv:2.2.4'
+    // replace "2.2.4" with any available version
 }
 ```
+
+Starting from v2.0.0, MMKV **no longer supports 32-bit** arch and API level 22 or 21, if you want 32-bit or API level 21~22, use v1.3.x LTS series.  
 
 For other installation options, see [Android Setup](https://github.com/Tencent/MMKV/wiki/android_setup).
 
@@ -347,7 +345,8 @@ Check out the [CHANGELOG.md](./CHANGELOG.md) for details of change history.
 
 ## Contributing
 
-If you are interested in contributing, check out the [CONTRIBUTING.md](./CONTRIBUTING.md), also join our [Tencent OpenSource Plan](https://opensource.tencent.com/contribution).
+If you are interested in contributing, check out the [CONTRIBUTING.md](./CONTRIBUTING.md), also join our [Tencent OpenSource Plan](https://opensource.tencent.com/contribution). MMKV has officially joined the [Tencent Device-oriented Service Product Alliance](https://tds-union.qq.com/), working together with other alliance members to build an open and mutually beneficial frontend technology product ecosystem.
+
 
 To give clarity of what is expected of our members, MMKV has adopted the code of conduct defined by the Contributor Covenant, which is widely used. And we think it articulates our values well. For more, check out the [Code of Conduct](./CODE_OF_CONDUCT.md).
 

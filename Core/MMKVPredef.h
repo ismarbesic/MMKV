@@ -34,7 +34,7 @@
 #include <vector>
 #include <unordered_map>
 
-constexpr auto MMKV_VERSION = "v2.2.4";
+constexpr auto MMKV_VERSION = "v2.3.0";
 
 #ifdef DEBUG
 #    define MMKV_DEBUG
@@ -271,6 +271,9 @@ void unused(const T &) {}
 
 constexpr size_t AES_KEY_LEN = 16;
 constexpr size_t AES_KEY_BITSET_LEN = 128;
+constexpr size_t AES_IV_LEN = 16;
+constexpr size_t AES256_KEY_LEN = 32;
+constexpr size_t AES256_KEY_BITSET_LEN = 256;
 
 } // namespace mmkv
 
